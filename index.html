@@ -269,7 +269,7 @@
           <label><input type="radio" name="bus" value="si"><span>Sí, quiero lugar</span></label>
           <label><input type="radio" name="bus" value="no" checked><span>No, voy por mi cuenta</span></label>
         </div>
-        <label class="field" id="f-zona"><span>¿Desde qué zona venís?</span><input type="text" name="zona" placeholder="Ej: Palermo, Belgrano, Caballito"></label>
+        <label class="field" id="f-zona"><span id="zonaLabel">¿Desde qué zona venís?</span><input type="text" name="zona" placeholder="Ej: Palermo, Belgrano, Caballito"></label>
       </fieldset>
 
       <div class="nav">
@@ -399,7 +399,8 @@
   }
   function fail(msg){ err.textContent = msg; err.hidden = false; }
   function namesOk(){ return !!q("n1").value.trim() && (!acomp() || !!q("n2").value.trim()); }
-  function refreshButtons(){ var ok = namesOk(); nextBtn.disabled = !ok; saveBtn.disabled = !ok; }
+  function zonaOk(){ return q("bus").value !== "si" || !!q("zona").value.trim(); }
+  function refreshButtons(){ var ok = namesOk(); nextBtn.disabled = !ok; saveBtn.disabled = !(ok && zonaOk()); }
   function valid(){
     if (step === 1) {
       if (!q("n1").value.trim()) return fail("Poné tu nombre así sé quién viene.");
@@ -411,6 +412,10 @@
   backBtn.addEventListener("click", function(){ step--; show(); });
   Array.prototype.forEach.call(q("modo"), function(r){ r.addEventListener("change", function(){ document.getElementById("f-n2").hidden = !acomp(); refreshButtons(); }); });
   form.addEventListener("input", refreshButtons);
+  Array.prototype.forEach.call(q("bus"), function(r){ r.addEventListener("change", function(){
+    document.getElementById("zonaLabel").textContent = q("bus").value === "si" ? "¿Desde qué zona venís? (necesario para el colectivo)" : "¿Desde qué zona venís?";
+    refreshButtons();
+  }); });
   ["d1","d2"].forEach(function(n){
     q(n).addEventListener("change", function(){ var x = q(n + "x"); x.hidden = !(q(n).value === "Alergia" || q(n).value === "Otra"); if (!x.hidden) x.focus(); });
   });
@@ -423,8 +428,10 @@
     e.preventDefault();
     if (step !== TOTAL) { if (valid() === true) { step++; show(); } return; }
     if (!namesOk()) { step = 1; show(); return fail("Falta el nombre."); }
+    if (!zonaOk()) { q("zona").focus(); return fail("Decime desde qué zona venís para armar el colectivo."); }
     saveBtn.disabled = true; saveBtn.classList.add("saving"); saveBtn.textContent = "Guardando…";
-    save(payload())
+    var timeout = new Promise(function(_, rej){ setTimeout(function(){ rej(new Error("timeout")); }, 20000); });
+    Promise.race([save(payload()), timeout])
       .then(function(){
         form.hidden = true;
         document.getElementById("thanksName").textContent = q("n1").value.trim().split(" ")[0];
