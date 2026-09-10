@@ -16,6 +16,7 @@
     --sans:'Montserrat', 'Helvetica Neue', Arial, sans-serif;
   }
   *{box-sizing:border-box}
+  [hidden]{display:none!important}
   html{scroll-behavior:smooth}
   html.gated,html.gated body{overflow:hidden;height:100%;overscroll-behavior:none}
   body{margin:0;background:var(--ink);color:var(--cream);font-family:var(--sans);font-weight:300;line-height:1.6;-webkit-font-smoothing:antialiased}
@@ -137,7 +138,8 @@
   .thanks{margin-top:26px}
   .thanks .big{font-family:var(--display);font-size:30px;color:var(--gold);margin-bottom:6px}
   .thanks[hidden]{display:none}
-  .btn[disabled]{opacity:.6;cursor:wait}
+  .btn[disabled]{opacity:.4;cursor:not-allowed}
+  .btn.saving[disabled]{opacity:.7;cursor:wait}
 
   /* playlist */
   .music{margin:22px auto 0;max-width:340px;display:grid;gap:8px;justify-items:center}
@@ -375,6 +377,7 @@
     nextBtn.hidden = step === TOTAL;
     saveBtn.hidden = step !== TOTAL;
     err.hidden = true;
+    refreshButtons();
     if (step === 2) {
       document.getElementById("who1").textContent = q("n1").value.trim() || "Vos";
       document.getElementById("who2").textContent = q("n2").value.trim() || "Acompañante";
@@ -382,6 +385,8 @@
     }
   }
   function fail(msg){ err.textContent = msg; err.hidden = false; }
+  function namesOk(){ return !!q("n1").value.trim() && (!acomp() || !!q("n2").value.trim()); }
+  function refreshButtons(){ var ok = namesOk(); nextBtn.disabled = !ok; saveBtn.disabled = !ok; }
   function valid(){
     if (step === 1) {
       if (!q("n1").value.trim()) return fail("Poné tu nombre así sé quién viene.");
@@ -391,7 +396,8 @@
   }
   nextBtn.addEventListener("click", function(){ if (valid() === true) { step++; show(); } });
   backBtn.addEventListener("click", function(){ step--; show(); });
-  Array.prototype.forEach.call(q("modo"), function(r){ r.addEventListener("change", function(){ document.getElementById("f-n2").hidden = !acomp(); }); });
+  Array.prototype.forEach.call(q("modo"), function(r){ r.addEventListener("change", function(){ document.getElementById("f-n2").hidden = !acomp(); refreshButtons(); }); });
+  form.addEventListener("input", refreshButtons);
   ["d1","d2"].forEach(function(n){
     q(n).addEventListener("change", function(){ var x = q(n + "x"); x.hidden = !(q(n).value === "Alergia" || q(n).value === "Otra"); if (!x.hidden) x.focus(); });
   });
@@ -402,7 +408,9 @@
   }
   form.addEventListener("submit", function(e){
     e.preventDefault();
-    saveBtn.disabled = true; saveBtn.textContent = "Guardando…";
+    if (step !== TOTAL) { if (valid() === true) { step++; show(); } return; }
+    if (!namesOk()) { step = 1; show(); return fail("Falta el nombre."); }
+    saveBtn.disabled = true; saveBtn.classList.add("saving"); saveBtn.textContent = "Guardando…";
     save(payload())
       .then(function(){
         form.hidden = true;
@@ -411,7 +419,7 @@
         document.getElementById("thanks").hidden = false;
       })
       .catch(function(){
-        saveBtn.disabled = false; saveBtn.textContent = "Confirmar asistencia";
+        saveBtn.disabled = false; saveBtn.classList.remove("saving"); saveBtn.textContent = "Confirmar asistencia";
         fail("No se pudo guardar. Revisá la conexión y probá de nuevo.");
       });
   });
