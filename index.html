@@ -49,7 +49,7 @@
   .logo .sub{font-weight:500;font-size:15px;letter-spacing:.34em;text-transform:uppercase;color:var(--cream);text-shadow:0 2px 10px rgba(0,0,0,.8)}
 
   /* ---------- Portada ---------- */
-  .hero{position:relative;min-height:100svh;display:flex;flex-direction:column;align-items:center;padding:10svh 24px 64px;text-align:center;overflow:hidden;isolation:isolate}
+  .hero{position:relative;min-height:100svh;display:flex;flex-direction:column;align-items:center;padding:10svh 24px 84px;text-align:center;overflow:hidden;isolation:isolate}
   .hero::before{content:"";position:absolute;inset:0;z-index:-2;background:url("img/portada.jpg") center/cover no-repeat;transform:scale(1.03)}
   .hero::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(10,9,16,.55) 0%,rgba(10,9,16,.25) 35%,rgba(10,9,16,.1) 55%,rgba(10,9,16,.75) 78%,rgba(10,9,16,.95) 100%)}
   .hero .eyebrow{font-size:12px;letter-spacing:.42em;text-transform:uppercase;color:var(--cream);margin:0 0 18px;text-shadow:0 2px 8px rgba(0,0,0,.8)}
@@ -59,9 +59,9 @@
   .hero .where{font-weight:600;font-size:18px;letter-spacing:.1em;text-transform:uppercase;margin:22px 0 0;text-shadow:0 2px 12px rgba(0,0,0,.9)}
   .hero .code{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--dust);margin:26px 0 0}
   .hero .rsvp{font-weight:600;font-size:13px;letter-spacing:.42em;color:var(--gold);margin:16px 0 0;text-decoration:none}
-  .hero .scroll{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);width:22px;height:34px;border:1px solid rgba(201,165,90,.5);border-radius:12px}
-  .hero .scroll::after{content:"";position:absolute;left:50%;top:6px;width:3px;height:6px;margin-left:-1.5px;border-radius:2px;background:var(--gold);animation:drop 1.8s infinite}
-  @keyframes drop{0%{transform:translateY(0);opacity:1}70%{transform:translateY(14px);opacity:0}100%{opacity:0}}
+  .hero .scroll{position:absolute;left:0;right:0;bottom:12px;display:grid;justify-items:center;gap:2px;text-decoration:none;color:var(--gold-2);font-size:11px;font-weight:600;letter-spacing:.3em;text-transform:uppercase;text-shadow:0 2px 8px rgba(0,0,0,.9);animation:nudge 2s ease-in-out infinite}
+  .hero .scroll svg{width:26px;height:26px;fill:none;stroke:var(--gold);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 2px 6px rgba(0,0,0,.9))}
+  @keyframes nudge{0%,100%{transform:translateY(0)}50%{transform:translateY(7px)}}
 
   /* secuencia de entrada, como en el video */
   .hero .in{opacity:1}
@@ -195,7 +195,10 @@
       <div><b id="m">--</b><span>Minutos</span></div>
       <div><b id="s">--</b><span>Segundos</span></div>
     </div>
-    <div class="scroll in" aria-hidden="true"></div>
+    <a class="scroll in" href="#fiesta">
+      <span>Deslizá para ver más</span>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+    </a>
   </header>
 
   <section id="fiesta">
