@@ -348,9 +348,21 @@
   var SHEET_URL = "https://script.google.com/macros/s/AKfycbzIJV36ZaEFjoHjYWo95TYEov13o2g_n9NPFkUBjnVSnEXNk4C67uVPf9TXxB3Uct83/exec";       // URL /exec del Apps Script que guarda en el Google Sheet
   var PARTY = new Date("2026-10-30T21:00:00-03:00");
 
-  function save(data){
+  function post(data){
     return fetch(SHEET_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" }, body: JSON.stringify(data) });
   }
+  var PENDING = "pach50_pendientes";
+  function pendientes(){ try { return JSON.parse(localStorage.getItem(PENDING) || "[]"); } catch (e) { return []; } }
+  function guardarPendiente(data){ try { var l = pendientes(); l.push(data); localStorage.setItem(PENDING, JSON.stringify(l)); } catch (e) {} }
+  function save(data){
+    return post(data).catch(function(err){ guardarPendiente(data); throw err; });
+  }
+  // reintento silencioso de lo que haya quedado pendiente en una visita anterior
+  (function reintentar(){
+    var l = pendientes(); if (!l.length) return;
+    try { localStorage.removeItem(PENDING); } catch (e) {}
+    l.forEach(function(d){ post(d).catch(function(){ guardarPendiente(d); }); });
+  })();
 
   // --- Portón + música ---
   var gate = document.getElementById("gate");
