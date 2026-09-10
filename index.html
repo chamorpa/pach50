@@ -446,7 +446,7 @@
     var song = music.elements.song.value.trim(); if (!song) { music.elements.song.focus(); return; }
     var btn = music.querySelector("button"); btn.disabled = true;
     save({ tipo: "playlist", fecha: new Date().toISOString(), cancion: song, de: music.elements.from.value.trim() })
-      .then(function(){ music.elements.song.value = ""; musicOk.hidden = false; })
+      .then(function(){ music.elements.song.value = ""; music.elements.from.value = ""; musicOk.textContent = "¡Anotada! Podés sugerir otra."; musicOk.hidden = false; })
       .catch(function(){ musicOk.textContent = "No se pudo guardar, probá de nuevo."; musicOk.hidden = false; })
       .then(function(){ btn.disabled = false; });
   });
