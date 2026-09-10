@@ -156,6 +156,18 @@
   .music .btn{margin-top:10px}
   .music p{margin-top:4px}
 
+  /* pop-up de guardado */
+  .overlay{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:24px;background:rgba(10,9,16,.88);backdrop-filter:blur(6px)}
+  .overlay .card{width:100%;max-width:340px;border:1px solid var(--gold-3);border-radius:18px;padding:34px 26px 28px;background:var(--ink-2);text-align:center;display:grid;justify-items:center;gap:10px;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+  .spinner{width:46px;height:46px;border-radius:50%;border:3px solid var(--ink-3);border-top-color:var(--gold);animation:spin .9s linear infinite;margin-bottom:6px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .check{width:46px;height:46px;border-radius:50%;background:linear-gradient(180deg,var(--gold-2),var(--gold) 60%,var(--gold-3));display:grid;place-items:center;margin-bottom:6px}
+  .check svg{width:26px;height:26px;fill:none;stroke:var(--ink);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+  .ovTitle{margin:0;font-family:var(--display);font-size:26px;line-height:1.1;color:var(--gold-2)}
+  .ovText{margin:0;font-size:14px;color:var(--cream);max-width:26ch}
+  .overlay .btn{margin-top:14px}
+  @media (prefers-reduced-motion:reduce){.spinner{animation:none;border-top-color:var(--gold);border-right-color:var(--gold)}}
+
   /* cierre */
   .outro{padding:64px 28px 40px;background:radial-gradient(ellipse at 50% 100%,#241a2c 0%,var(--ink) 70%)}
   .outro .bye{font-family:var(--display);font-size:38px;color:var(--gold);letter-spacing:.03em;margin:0 0 6px}
@@ -312,6 +324,16 @@
   <footer>Pach 50th · 30.10.26</footer>
 </div>
 
+<div class="overlay" id="overlay" hidden role="dialog" aria-modal="true" aria-live="assertive">
+  <div class="card">
+    <div class="spinner" id="ovSpin" aria-hidden="true"></div>
+    <div class="check" id="ovCheck" hidden aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg></div>
+    <p class="ovTitle" id="ovTitle">Guardando tu confirmación…</p>
+    <p class="ovText" id="ovText">No cierres la página, es un segundo.</p>
+    <button type="button" class="btn solid" id="ovBtn" hidden>Cerrar</button>
+  </div>
+</div>
+
 <button class="audio" id="audio" type="button" aria-label="Pausar música" aria-pressed="true">
   <span class="bars"><i></i><i></i><i></i><i></i></span>
   <span class="paused" aria-hidden="true">♪</span>
@@ -377,6 +399,26 @@
   }
   tick(); setInterval(tick, 1000);
 
+  // --- Pop-up de guardado ---
+  var overlay = document.getElementById("overlay"), ovSpin = document.getElementById("ovSpin"), ovCheck = document.getElementById("ovCheck"),
+      ovTitle = document.getElementById("ovTitle"), ovText = document.getElementById("ovText"), ovBtn = document.getElementById("ovBtn");
+  function ovShow(title, text){
+    ovSpin.hidden = false; ovCheck.hidden = true; ovBtn.hidden = true;
+    ovTitle.textContent = title; ovText.textContent = text;
+    overlay.hidden = false; document.documentElement.classList.add("gated");
+  }
+  function ovDone(title, text, btnLabel, onClose){
+    ovSpin.hidden = true; ovCheck.hidden = false;
+    ovTitle.textContent = title; ovText.textContent = text;
+    ovBtn.textContent = btnLabel; ovBtn.hidden = false; ovBtn.onclick = function(){ ovHide(); if (onClose) onClose(); }; ovBtn.focus();
+  }
+  function ovError(text){
+    ovSpin.hidden = true; ovCheck.hidden = true;
+    ovTitle.textContent = "No se pudo guardar"; ovText.textContent = text;
+    ovBtn.textContent = "Reintentar"; ovBtn.hidden = false; ovBtn.onclick = ovHide;
+  }
+  function ovHide(){ overlay.hidden = true; document.documentElement.classList.remove("gated"); }
+
   // --- Asistencia en 3 pasos ---
   var form = document.getElementById("rsvp");
   var step = 1, TOTAL = 3;
@@ -429,18 +471,23 @@
     if (step !== TOTAL) { if (valid() === true) { step++; show(); } return; }
     if (!namesOk()) { step = 1; show(); return fail("Falta el nombre."); }
     if (!zonaOk()) { q("zona").focus(); return fail("Decime desde qué zona venís para armar el colectivo."); }
-    saveBtn.disabled = true; saveBtn.classList.add("saving"); saveBtn.textContent = "Guardando…";
+    saveBtn.disabled = true;
+    ovShow("Guardando tu confirmación…", "No cierres la página, es un segundo.");
     var timeout = new Promise(function(_, rej){ setTimeout(function(){ rej(new Error("timeout")); }, 20000); });
+    var nombre = q("n1").value.trim().split(" ")[0], conBus = q("bus").value === "si";
     Promise.race([save(payload()), timeout])
       .then(function(){
-        form.hidden = true;
-        document.getElementById("thanksName").textContent = q("n1").value.trim().split(" ")[0];
-        document.getElementById("thanksBus").hidden = q("bus").value !== "si";
-        document.getElementById("thanks").hidden = false;
+        ovDone("¡Listo, " + nombre + "!", conBus ? "Ya quedaste en la lista. Te aviso por WhatsApp el punto de salida del colectivo." : "Ya quedaste en la lista. Nos vemos el 30 de octubre.", "Cerrar", function(){
+          form.hidden = true;
+          document.getElementById("thanksName").textContent = nombre;
+          document.getElementById("thanksBus").hidden = !conBus;
+          document.getElementById("thanks").hidden = false;
+          document.getElementById("asistencia").scrollIntoView({ behavior: "smooth", block: "start" });
+        });
       })
       .catch(function(){
-        saveBtn.disabled = false; saveBtn.classList.remove("saving"); saveBtn.textContent = "Confirmar asistencia";
-        fail("No se pudo guardar. Revisá la conexión y probá de nuevo.");
+        saveBtn.disabled = false;
+        ovError("Revisá la conexión y probá de nuevo.");
       });
   });
   function dietOf(n){ var v = q(n).value, x = q(n + "x").value.trim(); return v + (x ? " (" + x + ")" : ""); }
@@ -452,9 +499,11 @@
     e.preventDefault();
     var song = music.elements.song.value.trim(); if (!song) { music.elements.song.focus(); return; }
     var btn = music.querySelector("button"); btn.disabled = true;
-    save({ tipo: "playlist", fecha: new Date().toISOString(), cancion: song, de: music.elements.from.value.trim() })
-      .then(function(){ music.elements.song.value = ""; music.elements.from.value = ""; musicOk.textContent = "¡Anotada! Podés sugerir otra."; musicOk.hidden = false; })
-      .catch(function(){ musicOk.textContent = "No se pudo guardar, probá de nuevo."; musicOk.hidden = false; })
+    ovShow("Anotando la canción…", "No cierres la página, es un segundo.");
+    var tmo = new Promise(function(_, rej){ setTimeout(function(){ rej(new Error("timeout")); }, 20000); });
+    Promise.race([save({ tipo: "playlist", fecha: new Date().toISOString(), cancion: song, de: music.elements.from.value.trim() }), tmo])
+      .then(function(){ music.elements.song.value = ""; music.elements.from.value = ""; musicOk.textContent = "¡Anotada! Podés sugerir otra."; musicOk.hidden = false; ovDone("¡Anotada!", "“" + song + "” ya está en la lista del DJ.", "Cerrar"); })
+      .catch(function(){ ovError("Revisá la conexión y probá de nuevo."); })
       .then(function(){ btn.disabled = false; });
   });
 
