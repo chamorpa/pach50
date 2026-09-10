@@ -1,0 +1,434 @@
+<title>Pach 50th</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Montserrat:wght@300;400;500;600&display=swap">
+<style>
+  :root{
+    --ink:#0a0910;        /* piso del bar, negro con un dejo violeta */
+    --ink-2:#141220;      /* superficie */
+    --ink-3:#1e1b2b;      /* borde suave */
+    --gold:#c9a55a;       /* el dorado del logo */
+    --gold-2:#e6cf8f;     /* brillo */
+    --gold-3:#8a6d33;     /* sombra del dorado */
+    --cream:#f2eadb;      /* texto principal */
+    --dust:#a79c8f;       /* texto secundario */
+    --velvet:#5a1a2a;     /* cortina */
+    --display:'Lilita One', 'Arial Black', Impact, sans-serif;
+    --sans:'Montserrat', 'Helvetica Neue', Arial, sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  html.gated,html.gated body{overflow:hidden;height:100%;overscroll-behavior:none}
+  body{margin:0;background:var(--ink);color:var(--cream);font-family:var(--sans);font-weight:300;line-height:1.6;-webkit-font-smoothing:antialiased}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+  .page{max-width:480px;margin:0 auto;background:var(--ink);position:relative;box-shadow:0 0 80px rgba(0,0,0,.6)}
+
+  /* ---------- Portón de entrada ---------- */
+  .gate{position:fixed;inset:0;z-index:50;touch-action:none;overscroll-behavior:contain;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;background:radial-gradient(ellipse at 50% 30%,#1c1626 0%,var(--ink) 65%);transition:opacity .9s ease,visibility .9s}
+  .gate[hidden]{display:none}
+  .gate.closing{opacity:0;visibility:hidden}
+  .gate .logo{transform:scale(.9)}
+  .gate p{margin:0;font-size:12px;letter-spacing:.32em;text-transform:uppercase;color:var(--dust)}
+  .gate button{font-family:var(--sans);font-weight:500;letter-spacing:.26em;text-transform:uppercase;font-size:12px;color:var(--ink);background:linear-gradient(180deg,var(--gold-2),var(--gold) 60%,var(--gold-3));border:0;border-radius:999px;padding:16px 34px;cursor:pointer;box-shadow:0 10px 30px rgba(201,165,90,.25)}
+  .gate button:focus-visible,.btn:focus-visible,.audio:focus-visible{outline:2px solid var(--gold-2);outline-offset:3px}
+  .gate small{font-size:11px;color:var(--dust);letter-spacing:.08em}
+
+  /* ---------- Logo ---------- */
+  .logo{display:grid;justify-items:center;gap:2px;text-align:center}
+  .logo .name{font-family:var(--display);font-size:clamp(64px,19vw,84px);line-height:.95;letter-spacing:.04em;background:linear-gradient(180deg,var(--gold-2) 0%,var(--gold) 45%,var(--gold-3) 100%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 4px 14px rgba(0,0,0,.6));position:relative;padding-right:.55em}
+  .logo .name sup{position:absolute;top:-.05em;right:0;font-size:.3em;letter-spacing:.06em;line-height:1;background:linear-gradient(180deg,var(--gold-2),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .logo .sub{font-weight:500;font-size:15px;letter-spacing:.34em;text-transform:uppercase;color:var(--cream);text-shadow:0 2px 10px rgba(0,0,0,.8)}
+
+  /* ---------- Portada ---------- */
+  .hero{position:relative;min-height:100svh;display:flex;flex-direction:column;align-items:center;padding:10svh 24px 64px;text-align:center;overflow:hidden;isolation:isolate}
+  .hero::before{content:"";position:absolute;inset:0;z-index:-2;background:url("{{HERO}}") center/cover no-repeat;transform:scale(1.03)}
+  .hero::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(10,9,16,.55) 0%,rgba(10,9,16,.25) 35%,rgba(10,9,16,.1) 55%,rgba(10,9,16,.75) 78%,rgba(10,9,16,.95) 100%)}
+  .hero .eyebrow{font-size:12px;letter-spacing:.42em;text-transform:uppercase;color:var(--cream);margin:0 0 18px;text-shadow:0 2px 8px rgba(0,0,0,.8)}
+  .hero .rule{width:150px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:26px 0}
+  .hero .when{font-weight:600;font-size:clamp(20px,6vw,26px);letter-spacing:.06em;text-transform:uppercase;text-shadow:0 2px 12px rgba(0,0,0,.9);margin:0}
+  .hero .hour{font-weight:500;font-size:15px;letter-spacing:.2em;margin:10px 0 0}
+  .hero .where{font-weight:600;font-size:18px;letter-spacing:.1em;text-transform:uppercase;margin:22px 0 0;text-shadow:0 2px 12px rgba(0,0,0,.9)}
+  .hero .code{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--dust);margin:26px 0 0}
+  .hero .rsvp{font-weight:600;font-size:13px;letter-spacing:.42em;color:var(--gold);margin:16px 0 0;text-decoration:none}
+  .hero .scroll{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);width:22px;height:34px;border:1px solid rgba(201,165,90,.5);border-radius:12px}
+  .hero .scroll::after{content:"";position:absolute;left:50%;top:6px;width:3px;height:6px;margin-left:-1.5px;border-radius:2px;background:var(--gold);animation:drop 1.8s infinite}
+  @keyframes drop{0%{transform:translateY(0);opacity:1}70%{transform:translateY(14px);opacity:0}100%{opacity:0}}
+
+  /* secuencia de entrada, como en el video */
+  .hero .in{opacity:1}
+  .page.play .hero .in{animation:rise .9s cubic-bezier(.2,.7,.2,1) both}
+  .page.play .hero .in:nth-child(1){animation-delay:.2s}
+  .page.play .hero .in:nth-child(2){animation-delay:.7s}
+  .page.play .hero .in:nth-child(3){animation-delay:1.5s}
+  .page.play .hero .in:nth-child(4){animation-delay:2.1s}
+  .page.play .hero .in:nth-child(5){animation-delay:2.6s}
+  .page.play .hero .in:nth-child(6){animation-delay:3.1s}
+  .page.play .hero .in:nth-child(7){animation-delay:3.6s}
+  .page.play .hero .in:nth-child(8){animation-delay:4.1s}
+  .page.play .hero .in:nth-child(9){animation-delay:4.6s}
+  .page.play .hero .in:nth-child(10){animation-delay:5.2s}
+  @keyframes rise{from{opacity:0;transform:translateY(14px);filter:blur(6px)}to{opacity:1;transform:none;filter:none}}
+
+  /* ---------- Control de audio ---------- */
+  .audio{position:fixed;right:max(16px,calc(50% - 240px + 16px));bottom:18px;z-index:40;width:48px;height:48px;border-radius:50%;border:1px solid rgba(201,165,90,.6);background:rgba(10,9,16,.75);backdrop-filter:blur(8px);color:var(--gold);cursor:pointer;display:grid;place-items:center;padding:0}
+  .audio .bars{display:flex;gap:3px;align-items:flex-end;height:16px}
+  .audio .bars i{display:block;width:3px;background:var(--gold);height:4px;border-radius:1px}
+  .audio.on .bars i{animation:eq .8s ease-in-out infinite alternate}
+  .audio.on .bars i:nth-child(2){animation-delay:.15s}.audio.on .bars i:nth-child(3){animation-delay:.3s}.audio.on .bars i:nth-child(4){animation-delay:.45s}
+  @keyframes eq{from{height:4px}to{height:16px}}
+  .audio .paused{display:none;font-size:14px}
+  .audio:not(.on) .bars{display:none}
+  .audio:not(.on) .paused{display:block}
+
+  /* ---------- Secciones ---------- */
+  section{padding:56px 28px;text-align:center}
+  section.tone{background:var(--ink-2)}
+  .icon{width:44px;height:44px;margin:0 auto 18px;color:var(--gold)}
+  .icon svg{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+  h2{font-family:var(--sans);font-weight:600;font-size:15px;letter-spacing:.42em;text-transform:uppercase;margin:0 0 18px;color:var(--cream);text-wrap:balance}
+  h2 em{font-style:normal;color:var(--gold)}
+  section p{margin:0 auto;max-width:34ch;font-size:15px;color:var(--cream)}
+  section p.muted{color:var(--dust);font-size:13px;margin-top:8px}
+  .kv{display:grid;gap:4px;margin:22px auto 0;font-size:14px;letter-spacing:.08em;text-transform:uppercase}
+  .kv b{font-weight:600}
+  .kv span{color:var(--dust);font-size:12px;letter-spacing:.24em}
+  .btn{display:inline-block;margin-top:26px;font-family:var(--sans);font-weight:500;font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold-2);text-decoration:none;border:1px solid var(--gold);border-radius:999px;padding:14px 30px;background:transparent;cursor:pointer;transition:background .25s,color .25s}
+  .btn:hover{background:var(--gold);color:var(--ink)}
+  .btn.solid{background:linear-gradient(180deg,var(--gold-2),var(--gold) 60%,var(--gold-3));color:var(--ink);border-color:transparent}
+
+  /* cuenta regresiva */
+  .hero .count{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;width:100%;max-width:360px;margin:auto 0 0;padding-top:40px}
+  .count div{display:grid;gap:4px}
+  .count b{font-family:var(--display);font-weight:400;font-size:clamp(34px,10vw,44px);line-height:1;color:var(--gold-2);font-variant-numeric:tabular-nums;text-shadow:0 3px 14px rgba(0,0,0,.9)}
+  .count span{font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--cream);opacity:.85;text-shadow:0 2px 8px rgba(0,0,0,.9)}
+
+  /* skyline divisor */
+  .skyline{display:block;width:100%;height:64px;color:var(--ink-3)}
+  .skyline svg{width:100%;height:100%;display:block}
+
+  /* asistencia */
+  .rsvp{margin:26px auto 0;max-width:340px;text-align:left}
+  .steps{list-style:none;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:0;margin:0 0 22px}
+  .steps li{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--dust);text-align:center;padding-top:10px;border-top:1px solid var(--ink-3)}
+  .steps li.on{color:var(--gold);border-top-color:var(--gold)}
+  .steps li.done{border-top-color:var(--gold-3)}
+  .step{border:0;padding:0;margin:0;display:none}
+  .step.on{display:grid;gap:14px}
+  .step legend{padding:0;margin-bottom:8px;font-weight:600;font-size:15px;color:var(--cream);letter-spacing:.02em}
+  .step p.muted{margin:0;max-width:none;text-align:left}
+  .choice{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .choice label{position:relative}
+  .choice input{position:absolute;opacity:0;inset:0}
+  .choice span{display:block;text-align:center;padding:12px 8px;border:1px solid var(--ink-3);border-radius:10px;font-size:13px;color:var(--cream);cursor:pointer}
+  .choice input:checked+span{border-color:var(--gold);color:var(--gold-2);background:rgba(201,165,90,.08)}
+  .choice input:focus-visible+span{outline:2px solid var(--gold-2);outline-offset:2px}
+  .field{display:grid;gap:6px}
+  .field span,.who{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--dust)}
+  .who{margin:0 0 6px}
+  .rsvp input[type=text],.rsvp select{width:100%;font:inherit;font-size:15px;color:var(--cream);background:var(--ink);border:1px solid var(--ink-3);border-radius:10px;padding:12px 14px;-webkit-appearance:none;appearance:none}
+  .rsvp select{background-image:linear-gradient(45deg,transparent 50%,var(--gold) 50%),linear-gradient(135deg,var(--gold) 50%,transparent 50%);background-position:calc(100% - 20px) 50%,calc(100% - 15px) 50%;background-size:5px 5px;background-repeat:no-repeat}
+  .rsvp input:focus,.rsvp select:focus{outline:none;border-color:var(--gold)}
+  .diet{display:grid;gap:8px}
+  .diet[hidden],.field[hidden],.rsvp input[hidden]{display:none}
+  .nav{display:flex;gap:10px;justify-content:center;margin-top:8px}
+  .nav .btn{margin-top:16px;padding:14px 22px}
+  .btn.ghost{border-color:var(--ink-3);color:var(--dust)}
+  .rsvp #err{color:#e0a0a0;text-align:center}
+  .thanks{margin-top:26px}
+  .thanks .big{font-family:var(--display);font-size:30px;color:var(--gold);margin-bottom:6px}
+  .thanks[hidden]{display:none}
+  .btn[disabled]{opacity:.6;cursor:wait}
+
+  /* playlist */
+  .music{margin:22px auto 0;max-width:340px;display:grid;gap:8px;justify-items:center}
+  .music input{width:100%;font:inherit;font-size:15px;color:var(--cream);background:var(--ink);border:1px solid var(--ink-3);border-radius:10px;padding:12px 14px;-webkit-appearance:none;appearance:none}
+  .music input:focus{outline:none;border-color:var(--gold)}
+  .music .btn{margin-top:10px}
+  .music p{margin-top:4px}
+
+  /* cierre */
+  .outro{padding:64px 28px 40px;background:radial-gradient(ellipse at 50% 100%,#241a2c 0%,var(--ink) 70%)}
+  .outro .bye{font-family:var(--display);font-size:38px;color:var(--gold);letter-spacing:.03em;margin:0 0 6px}
+  .outro p{color:var(--dust);font-size:13px;letter-spacing:.2em;text-transform:uppercase}
+  footer{padding:18px;background:var(--ink-2);font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--dust);text-align:center}
+</style>
+
+<div class="gate" id="gate">
+  <div class="logo">
+    <div class="name">PACH 50<sup>TH</sup></div>
+    <div class="sub">Bday Party</div>
+  </div>
+  <p>Viernes 30 de octubre</p>
+  <button id="open" type="button">Abrir invitación</button>
+  <small>Con música. Subí el volumen 🔊</small>
+</div>
+
+<div class="page" id="page">
+
+  <header class="hero" id="hero">
+    <p class="eyebrow in">Te invito a mi cumple</p>
+    <div class="logo in">
+      <div class="name">PACH 50<sup>TH</sup></div>
+      <div class="sub">Bday Party</div>
+    </div>
+    <div class="rule in"></div>
+    <p class="when in">Viernes 30 de octubre</p>
+    <p class="hour in">21 HS</p>
+    <p class="where in">La Herencia · Pilar</p>
+    <p class="code in">Dress code · Elegante</p>
+    <a class="rsvp in" href="#asistencia">RSVP</a>
+    <div class="count in" id="count" aria-label="Cuenta regresiva">
+      <div><b id="d">--</b><span>Días</span></div>
+      <div><b id="h">--</b><span>Horas</span></div>
+      <div><b id="m">--</b><span>Minutos</span></div>
+      <div><b id="s">--</b><span>Segundos</span></div>
+    </div>
+    <div class="scroll in" aria-hidden="true"></div>
+  </header>
+
+  <section id="fiesta">
+    <div class="icon"><svg viewBox="0 0 24 24"><path d="M4 3h16l-8 9z"/><path d="M12 12v8"/><path d="M8 20h8"/><path d="M7 3l1.5 1.7M17 3l-1.5 1.7"/><circle cx="17" cy="6" r="1.2"/></svg></div>
+    <h2>DJ, tragos <em>&amp;</em> mucha fiesta</h2>
+    <div class="kv" style="margin-top:0">
+      <span>Cuándo</span><b>Viernes 30 de octubre · 21 hs</b>
+      <span style="margin-top:10px">Dónde</span><b>La Herencia Eventos</b>
+      <b style="font-weight:400;text-transform:none;letter-spacing:.02em">Saraví 1867, La Lonja, Pilar</b>
+    </div>
+    <a class="btn" href="https://www.google.com/maps/search/?api=1&query=La+Herencia+Eventos+Sarav%C3%AD+1867+Pilar" target="_blank" rel="noopener">Ver mapa</a>
+  </section>
+
+  <div class="skyline" aria-hidden="true">
+    <svg viewBox="0 0 480 64" preserveAspectRatio="none">
+      <g fill="currentColor">
+        <rect x="0" y="40" width="28" height="24"/><rect x="30" y="28" width="18" height="36"/><rect x="50" y="44" width="30" height="20"/>
+        <rect x="84" y="20" width="22" height="44"/><rect x="108" y="34" width="14" height="30"/><rect x="126" y="46" width="34" height="18"/>
+        <rect x="164" y="24" width="20" height="40"/><rect x="188" y="38" width="26" height="26"/>
+        <rect x="226" y="18" width="28" height="46"/><rect x="236" y="8" width="8" height="12"/><rect x="239" y="0" width="2" height="10"/>
+        <rect x="262" y="42" width="22" height="22"/><rect x="288" y="30" width="16" height="34"/><rect x="308" y="14" width="24" height="50"/>
+        <rect x="336" y="36" width="30" height="28"/><rect x="370" y="26" width="14" height="38"/><rect x="388" y="44" width="26" height="20"/>
+        <rect x="418" y="22" width="20" height="42"/><rect x="442" y="38" width="16" height="26"/><rect x="460" y="30" width="20" height="34"/>
+      </g>
+    </svg>
+  </div>
+
+  <section class="tone" id="asistencia">
+    <div class="icon"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/><path d="M9 15l2 2 4-4"/></svg></div>
+    <h2>Asistencia</h2>
+    <p>Confirmame antes del <b>{{RSVP_DEADLINE}}</b>. Son tres preguntas cortas.</p>
+
+    <form class="rsvp" id="rsvp" novalidate>
+      <ol class="steps" aria-label="Progreso">
+        <li class="on" data-step="1">Quiénes</li>
+        <li data-step="2">Comida</li>
+        <li data-step="3">Transporte</li>
+      </ol>
+
+      <fieldset class="step on" data-step="1">
+        <legend>¿Venís solo o acompañado?</legend>
+        <div class="choice">
+          <label><input type="radio" name="modo" value="solo" checked><span>Voy solo</span></label>
+          <label><input type="radio" name="modo" value="acomp"><span>Voy acompañado</span></label>
+        </div>
+        <label class="field"><span>Tu nombre y apellido</span><input type="text" name="n1" autocomplete="name" required></label>
+        <label class="field" id="f-n2" hidden><span>Nombre y apellido de tu acompañante</span><input type="text" name="n2"></label>
+      </fieldset>
+
+      <fieldset class="step" data-step="2">
+        <legend>¿Alguna restricción alimentaria?</legend>
+        <div class="diet" id="diet1">
+          <p class="who" id="who1">Vos</p>
+          <select name="d1"><option value="Ninguna">Ninguna</option><option>Celíaco</option><option>Vegetariano</option><option>Vegano</option><option>Alergia</option><option>Otra</option></select>
+          <input type="text" name="d1x" placeholder="¿A qué? / detalle" hidden>
+        </div>
+        <div class="diet" id="diet2" hidden>
+          <p class="who" id="who2">Acompañante</p>
+          <select name="d2"><option value="Ninguna">Ninguna</option><option>Celíaco</option><option>Vegetariano</option><option>Vegano</option><option>Alergia</option><option>Otra</option></select>
+          <input type="text" name="d2x" placeholder="¿A qué? / detalle" hidden>
+        </div>
+      </fieldset>
+
+      <fieldset class="step" data-step="3">
+        <legend>¿Necesitás transporte?</legend>
+        <p class="muted">Va a salir un colectivo a las 20 hs desde CABA, punto a confirmar, con vuelta incluida. Para venir y volver sin manejar.</p>
+        <div class="choice">
+          <label><input type="radio" name="bus" value="si"><span>Sí, quiero lugar</span></label>
+          <label><input type="radio" name="bus" value="no" checked><span>No, voy por mi cuenta</span></label>
+        </div>
+        <label class="field" id="f-zona"><span>¿Desde qué zona venís?</span><input type="text" name="zona" placeholder="Ej: Palermo, Belgrano, Caballito"></label>
+      </fieldset>
+
+      <div class="nav">
+        <button type="button" class="btn ghost" id="back" hidden>Atrás</button>
+        <button type="button" class="btn solid" id="next">Siguiente</button>
+        <button type="submit" class="btn solid" id="save" hidden>Confirmar asistencia</button>
+      </div>
+      <p class="muted" id="err" role="alert" hidden></p>
+    </form>
+    <div class="thanks" id="thanks" hidden>
+      <p class="big">¡Listo, <span id="thanksName"></span>!</p>
+      <p>Ya quedaste en la lista. Nos vemos el 30 de octubre.</p>
+      <p class="muted" id="thanksBus" hidden>Te aviso por WhatsApp el punto de salida del colectivo.</p>
+    </div>
+  </section>
+
+  <section class="tone" id="playlist">
+    <div class="icon"><svg viewBox="0 0 24 24"><path d="M9 18V6l11-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/></svg></div>
+    <h2>Playlist</h2>
+    <p>El DJ ya está avisado. Pasame las canciones que no pueden faltar y las sumo a la lista.</p>
+    <form class="music" id="music" novalidate>
+      <input type="text" name="song" placeholder="Canción o artista" required aria-label="Canción o artista">
+      <input type="text" name="from" placeholder="Tu nombre (opcional)" aria-label="Tu nombre">
+      <button type="submit" class="btn">Sugerir música</button>
+      <p class="muted" id="musicOk" role="status" hidden>¡Anotada! Podés sugerir otra.</p>
+    </form>
+  </section>
+
+  <section id="dresscode">
+    <div class="icon"><svg viewBox="0 0 24 24"><path d="M9 3l3 3 3-3"/><path d="M10.5 6L9 10l3 11 3-11-1.5-4z"/><path d="M9 3H6L4 8l4 2M15 3h3l2 5-4 2"/></svg></div>
+    <h2>Dress code</h2>
+    <p>Elegante. Pensá en una noche en Manhattan: traje, vestido, brillos y buenos zapatos para bailar.</p>
+    <p class="muted">Los tragos van por cuenta de la casa. Las ganas de bailar, por la tuya.</p>
+  </section>
+
+  <section class="outro">
+    <p class="bye">¡Los espero!</p>
+    <p>Pach</p>
+  </section>
+  <footer>Pach 50th · 30.10.26</footer>
+</div>
+
+<button class="audio" id="audio" type="button" aria-label="Pausar música" aria-pressed="true">
+  <span class="bars"><i></i><i></i><i></i><i></i></span>
+  <span class="paused" aria-hidden="true">♪</span>
+</button>
+
+<audio id="track" loop preload="auto" src="{{AUDIO}}"></audio>
+
+<script>
+(function(){
+  document.documentElement.classList.add("gated");
+  // --- Datos que Pablo puede cambiar ---
+  var SHEET_URL = "{{SHEET_URL}}";       // URL /exec del Apps Script que guarda en el Google Sheet
+  var PARTY = new Date("2026-10-30T21:00:00-03:00");
+
+  function save(data){
+    return fetch(SHEET_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" }, body: JSON.stringify(data) });
+  }
+
+  // --- Portón + música ---
+  var gate = document.getElementById("gate");
+  var page = document.getElementById("page");
+  var track = document.getElementById("track");
+  var audioBtn = document.getElementById("audio");
+  var playing = false;
+
+  function setAudioUI(on){
+    playing = on;
+    audioBtn.classList.toggle("on", on);
+    audioBtn.setAttribute("aria-pressed", on ? "true" : "false");
+    audioBtn.setAttribute("aria-label", on ? "Pausar música" : "Reproducir música");
+  }
+  function play(){
+    track.volume = 0.85;
+    var p = track.play();
+    if (p && p.then) p.then(function(){ setAudioUI(true); }).catch(function(){ setAudioUI(false); });
+    else setAudioUI(true);
+  }
+  document.getElementById("open").addEventListener("click", function(){
+    play();
+    window.scrollTo(0, 0);
+    document.documentElement.classList.remove("gated");
+    window.scrollTo(0, 0);
+    gate.classList.add("closing");
+    page.classList.add("play");
+    setTimeout(function(){ gate.hidden = true; window.scrollTo(0, 0); }, 900);
+  });
+  audioBtn.addEventListener("click", function(){
+    if (playing) { track.pause(); setAudioUI(false); } else { play(); }
+  });
+  setAudioUI(false);
+
+  // --- Cuenta regresiva ---
+  var d = document.getElementById("d"), h = document.getElementById("h"), m = document.getElementById("m"), s = document.getElementById("s");
+  function pad(n){ return (n < 10 ? "0" : "") + n; }
+  function tick(){
+    var diff = PARTY - new Date();
+    if (diff <= 0) { d.textContent = "00"; h.textContent = "00"; m.textContent = "00"; s.textContent = "00"; return; }
+    var sec = Math.floor(diff / 1000);
+    d.textContent = Math.floor(sec / 86400);
+    h.textContent = pad(Math.floor(sec % 86400 / 3600));
+    m.textContent = pad(Math.floor(sec % 3600 / 60));
+    s.textContent = pad(sec % 60);
+  }
+  tick(); setInterval(tick, 1000);
+
+  // --- Asistencia en 3 pasos ---
+  var form = document.getElementById("rsvp");
+  var step = 1, TOTAL = 3;
+  var backBtn = document.getElementById("back"), nextBtn = document.getElementById("next"), saveBtn = document.getElementById("save"), err = document.getElementById("err");
+  function q(n){ return form.elements[n]; }
+  function acomp(){ return q("modo").value === "acomp"; }
+  function show(){
+    form.querySelectorAll(".step").forEach(function(f){ f.classList.toggle("on", +f.dataset.step === step); });
+    form.querySelectorAll(".steps li").forEach(function(li){ var n = +li.dataset.step; li.classList.toggle("on", n === step); li.classList.toggle("done", n < step); });
+    backBtn.hidden = step === 1;
+    nextBtn.hidden = step === TOTAL;
+    saveBtn.hidden = step !== TOTAL;
+    err.hidden = true;
+    if (step === 2) {
+      document.getElementById("who1").textContent = q("n1").value.trim() || "Vos";
+      document.getElementById("who2").textContent = q("n2").value.trim() || "Acompañante";
+      document.getElementById("diet2").hidden = !acomp();
+    }
+  }
+  function fail(msg){ err.textContent = msg; err.hidden = false; }
+  function valid(){
+    if (step === 1) {
+      if (!q("n1").value.trim()) return fail("Poné tu nombre así sé quién viene.");
+      if (acomp() && !q("n2").value.trim()) return fail("Poné el nombre de tu acompañante.");
+    }
+    return true;
+  }
+  nextBtn.addEventListener("click", function(){ if (valid() === true) { step++; show(); } });
+  backBtn.addEventListener("click", function(){ step--; show(); });
+  Array.prototype.forEach.call(q("modo"), function(r){ r.addEventListener("change", function(){ document.getElementById("f-n2").hidden = !acomp(); }); });
+  ["d1","d2"].forEach(function(n){
+    q(n).addEventListener("change", function(){ var x = q(n + "x"); x.hidden = !(q(n).value === "Alergia" || q(n).value === "Otra"); if (!x.hidden) x.focus(); });
+  });
+  function payload(){
+    var people = [{ nombre: q("n1").value.trim(), comida: dietOf("d1") }];
+    if (acomp()) people.push({ nombre: q("n2").value.trim(), comida: dietOf("d2") });
+    return { tipo: "rsvp", fecha: new Date().toISOString(), personas: people, colectivo: q("bus").value === "si", zona: q("zona").value.trim() };
+  }
+  form.addEventListener("submit", function(e){
+    e.preventDefault();
+    saveBtn.disabled = true; saveBtn.textContent = "Guardando…";
+    save(payload())
+      .then(function(){
+        form.hidden = true;
+        document.getElementById("thanksName").textContent = q("n1").value.trim().split(" ")[0];
+        document.getElementById("thanksBus").hidden = q("bus").value !== "si";
+        document.getElementById("thanks").hidden = false;
+      })
+      .catch(function(){
+        saveBtn.disabled = false; saveBtn.textContent = "Confirmar asistencia";
+        fail("No se pudo guardar. Revisá la conexión y probá de nuevo.");
+      });
+  });
+  function dietOf(n){ var v = q(n).value, x = q(n + "x").value.trim(); return v + (x ? " (" + x + ")" : ""); }
+  show();
+
+  // --- Playlist ---
+  var music = document.getElementById("music"), musicOk = document.getElementById("musicOk");
+  music.addEventListener("submit", function(e){
+    e.preventDefault();
+    var song = music.elements.song.value.trim(); if (!song) { music.elements.song.focus(); return; }
+    var btn = music.querySelector("button"); btn.disabled = true;
+    save({ tipo: "playlist", fecha: new Date().toISOString(), cancion: song, de: music.elements.from.value.trim() })
+      .then(function(){ music.elements.song.value = ""; musicOk.hidden = false; })
+      .catch(function(){ musicOk.textContent = "No se pudo guardar, probá de nuevo."; musicOk.hidden = false; })
+      .then(function(){ btn.disabled = false; });
+  });
+
+})();
+</script>
